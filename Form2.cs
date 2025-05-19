@@ -19,9 +19,10 @@ namespace L2CS
         }
 
         string filePath;
-        string fileContent;
+        string file;
         private void button1_Click(object sender, EventArgs e)
         {
+            textBox1.Clear();
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).Replace(@"bin\Debug", "");
@@ -31,59 +32,42 @@ namespace L2CS
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    //Get the path of specified file
                     filePath = openFileDialog.FileName;
-
-                    //Read the contents of the file into a stream
                     var fileStream = openFileDialog.OpenFile();
 
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
-                        fileContent = reader.ReadToEnd();
+                        file = reader.ReadToEnd();
                     }
                 }
             }
-            
-            string[] predl = fileContent.Split(new[] { '.', '?', '!' });
-            for (int i = 0; i < predl.Length - 1; i++)
-            {
-                string t = predl[i];
-                if (t[0] == ' ') { predl[i] = predl[i].Replace(" ", ""); }
+
+            string[] predl = file.Replace(". ", ".").Replace("? ", "?").Replace("! ", "!").Split(new[] { '.', '?', '!' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var s in predl)
+            {      
+                if(s.Length > 0 && isOneLetter(s.Split()[0])) 
+                { textBox1.Text += s + Environment.NewLine; }
             }
 
-            string[][] words = new string[predl.Length][];
-            for (int i = 0; i < predl.Length; i++)
+            foreach (var s in predl)
             {
-                words[i] = predl[i].Split(' ');
+                if (s.Length > 0 && !isOneLetter(s.Split()[0])) 
+                { textBox1.Text += s + Environment.NewLine; }
             }
-
-            string final = "";
-            for(int i = 0; i < predl.Length-1; i++)
-            {
-                if (words[i][1] == " ") {
-                    string temp = "";
-                    for (int j = 0; j < words[i].Length; j++) {
-                        temp += words[i][j] + " ";
-                    }
-                    final = final + "." + temp;
-                }
-                else
-                {
-                    string temp = "";
-                    for (int j = 0; j < words[i].Length; j++)
-                    {
-                        temp += words[i][j] + " ";
-                    }
-                    final = temp + "." + final;
-                }
-
-            }
-
-            textBox1.Text = final;
 
         }
 
+        bool isOneLetter(string word)
+        {
+            return word.Length == 1 && char.IsLetter(word[0]);
+        }
+
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
         {
 
         }
